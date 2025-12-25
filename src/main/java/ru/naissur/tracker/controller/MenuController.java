@@ -1,11 +1,17 @@
 package ru.naissur.tracker.controller;
 
+import org.apache.commons.collections4.CollectionUtils;
+import ru.naissur.tracker.model.Task;
+import ru.naissur.tracker.repository.TaskRepository;
 import ru.naissur.tracker.view.MainMenu;
 
-import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class MenuController {
+
+  private final TaskRepository taskRepository = new TaskRepository();
+
+  private final Scanner sc = new Scanner(System.in);
 
   private static final int ADD_TASK = 1;
   private static final int SHOW_ALL_TASKS = 2;
@@ -15,29 +21,80 @@ public class MenuController {
 
   public void start() {
     MainMenu mainMenu = new MainMenu();
-    Scanner sc = new Scanner(System.in);
 
     int choice;
     do {
       try {
         mainMenu.show();
-
         System.out.print("Выберите действие: ");
-        choice = sc.nextInt();
+        choice = Integer.parseInt(sc.nextLine());
         switch (choice) {
-          case ADD_TASK -> System.out.println("Вы выбрали добавить задачу");
-          case SHOW_ALL_TASKS -> System.out.println("Вы выбрали просмотреть список задач");
-          case EDIT_TASK -> System.out.println("Вы выбрали редактировать задачу");
-          case DELETE_TASK -> System.out.println("Вы выбрали удалить задачу");
-          case EXIT -> System.out.println("Вы выбрали выйти из программы. До свидания!");
+          case ADD_TASK -> addTask();
+          case SHOW_ALL_TASKS -> showAllTasks();
+          case EDIT_TASK -> editTask();
+          case DELETE_TASK -> deleteTask();
+          case EXIT -> exit();
           default -> System.out.println("Вы ввели неверное значение. Попробуйте еще раз");
         }
-      } catch (InputMismatchException e) {
+      } catch (NumberFormatException e) {
         System.out.println("Необходимо ввести число!");
-        sc.next();
         choice = -1;
       }
     } while (choice != EXIT);
+
+    sc.close();
+  }
+
+  private void addTask() {
+    System.out.println();
+    System.out.println("Добавление задачи.");
+    String taskName = askForAction("Введите название задачи: ", "Название задачи не может быть пустым");
+    String taskDescription = askForAction("Введите описание задачи: ", "Описание задачи не может быть пустым");
+    Task newTask = Task.builder()
+        .name(taskName)
+        .description(taskDescription)
+        .build();
+    taskRepository.addTask(newTask);
+  }
+
+  private void showAllTasks() {
+    var tasks = taskRepository.getAllTasks();
+    System.out.println("Просмотр списка задач.");
+    if (CollectionUtils.isEmpty(tasks)) {
+      System.out.println("Список задач пуст");
+    } else {
+      tasks.forEach(this::displayTask);
+    }
+  }
+
+  private void editTask() {
+    System.out.println("Редактирование задачи");
+  }
+
+  private void deleteTask() {
+    System.out.println("Удаление задачи");
+  }
+
+  private void exit() {
+    System.out.println("Сохранение задач в файл и выход из программы");
+  }
+
+  private String askForAction(String action, String errorMessage) {
+    String value;
+    do {
+      System.out.print(action);
+      value = sc.nextLine();
+      if (value.isEmpty()) {
+        System.out.println(errorMessage);
+      }
+    } while (value.isEmpty());
+    return value;
+  }
+
+  private void displayTask(Task task) {
+    System.out.println("ID: " + task.getId());
+    System.out.println("\t" + "Название: " + task.getName());
+    System.out.println("\t" + "Описание: " + task.getDescription());
   }
 
 }
