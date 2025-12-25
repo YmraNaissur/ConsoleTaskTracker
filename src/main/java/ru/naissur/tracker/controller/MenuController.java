@@ -1,5 +1,6 @@
 package ru.naissur.tracker.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import ru.naissur.tracker.model.Task;
 import ru.naissur.tracker.repository.TaskRepository;
@@ -7,11 +8,11 @@ import ru.naissur.tracker.view.MainMenu;
 
 import java.util.Scanner;
 
+@RequiredArgsConstructor
 public class MenuController {
 
-  private final TaskRepository taskRepository = new TaskRepository();
-
-  private final Scanner sc = new Scanner(System.in);
+  private final Scanner scanner;
+  private final TaskRepository taskRepository;
 
   private static final int ADD_TASK = 1;
   private static final int SHOW_ALL_TASKS = 2;
@@ -27,7 +28,7 @@ public class MenuController {
       try {
         mainMenu.show();
         System.out.print("Выберите действие: ");
-        choice = Integer.parseInt(sc.nextLine());
+        choice = Integer.parseInt(scanner.nextLine());
         switch (choice) {
           case ADD_TASK -> addTask();
           case SHOW_ALL_TASKS -> showAllTasks();
@@ -41,8 +42,6 @@ public class MenuController {
         choice = -1;
       }
     } while (choice != EXIT);
-
-    sc.close();
   }
 
   private void addTask() {
@@ -83,7 +82,7 @@ public class MenuController {
     String value;
     do {
       System.out.print(action);
-      value = sc.nextLine();
+      value = scanner.nextLine();
       if (value.isEmpty()) {
         System.out.println(errorMessage);
       }
