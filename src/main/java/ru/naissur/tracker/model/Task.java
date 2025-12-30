@@ -10,7 +10,7 @@ import lombok.Data;
 @Builder
 public class Task {
 
-  private int id;
+  private long id;
   private String name;
   private String description;
 

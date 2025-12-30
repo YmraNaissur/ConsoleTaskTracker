@@ -12,21 +12,21 @@ import java.util.List;
 @Slf4j
 public class TaskRepository {
 
-  private List<Task> tasks;
+  private long idSequence = 1;
+  private final List<Task> tasks = new ArrayList<>(16);
 
   public void addTask(Task task) {
-    if (tasks == null) {
-      log.info("Список задач не инициализирован. Создание нового списка.");
-      tasks = new ArrayList<>(16);
-    }
-
-    task.setId(tasks.size() + 1);
+    task.setId(idSequence++);
     tasks.add(task);
     log.info("Задача добавлена: {}", task);
   }
 
   public List<Task> getAllTasks() {
     return tasks;
+  }
+
+  public boolean deleteTaskById(long id) {
+    return tasks.removeIf(task -> task.getId() == id);
   }
 
   public void loadTasks() {

@@ -71,7 +71,23 @@ public class MenuController {
   }
 
   private void deleteTask() {
-    System.out.println("Удаление задачи");
+    System.out.println("Удаление задачи.");
+    System.out.print("Введите ID задачи для удаления: ");
+    long id;
+    do {
+      try {
+        id = Long.parseLong(scanner.nextLine());
+      } catch (NumberFormatException e) {
+        System.out.println("Необходимо ввести число!");
+        id = -1;
+      }
+    } while (id < 0);
+    var isDeleted = taskRepository.deleteTaskById(id);
+    if (isDeleted) {
+      System.out.println("Задача с ID = " + id + " успешно удалена");
+    } else {
+      System.out.println("Задача с ID = " + id + " не найдена");
+    }
   }
 
   private void exit() {
